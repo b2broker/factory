@@ -69,18 +69,18 @@ abstract class BaseFactory
     public function extend(string $name, $class = null): self
     {
         //Checking for the existence of the provider with the same name
-        assert(
-            !array_key_exists($name, $this->providers),
+        \assert(
+            !\array_key_exists($name, $this->providers),
             new ProviderAlreadyExistsException("Provider with name '{$name}' already exists")
         );
 
-        if (!is_callable($class)) {
+        if (!\is_callable($class)) {
             if ($class === null) {
                 $class = $name;
             }
             //Checking for the existence of a class
-            assert(
-                $this->baseInterface === null || is_subclass_of($class, $this->baseInterface, true),
+            \assert(
+                $this->baseInterface === null || \is_subclass_of($class, $this->baseInterface, true),
                 new ProviderNotFoundException("Provider with name '{$name}' must be implement {$this->baseInterface}")
             );
         }
@@ -101,28 +101,28 @@ abstract class BaseFactory
     {
         $className = $this->providers[$name] ?? $name;
 
-        array_unshift($args, $this->container);
+        \array_unshift($args, $this->container);
 
-        if (is_callable($className)) {
-            $provider = call_user_func_array($className, $args);
+        if (\is_callable($className)) {
+            $provider = \call_user_func_array($className, $args);
 
-            assert(
+            \assert(
                 $this->baseInterface === null
-                || (is_object($provider) && $provider instanceof $this->baseInterface),
+                || (\is_object($provider) && $provider instanceof $this->baseInterface),
                 new ProviderNotFoundException("Provider with name '{$name}' must be implement {$this->baseInterface}")
             );
 
             return $provider;
         }
 
-        assert(
-            class_exists($className),
+        \assert(
+            \class_exists($className),
             new ProviderNotFoundException("Provider with class '{$className}' not found.")
         );
 
         $class = new ReflectionClass($className);
 
-        assert(
+        \assert(
             $this->baseInterface === null || $class->implementsInterface($this->baseInterface),
             new ProviderNotFoundException("Provider with name '{$name}' must be implement {$this->baseInterface}")
         );
