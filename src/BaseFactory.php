@@ -31,6 +31,11 @@ abstract class BaseFactory
     protected $providers = [];
 
     /**
+     * @var bool
+     */
+    protected $useApp = true;
+
+    /**
      * Factory constructor.
      *
      * @param ContainerInterface $container
@@ -101,7 +106,9 @@ abstract class BaseFactory
     {
         $className = $this->providers[$name] ?? $name;
 
-        \array_unshift($args, $this->container);
+        if ($this->useApp) {
+            \array_unshift($args, $this->container);
+        }
 
         if (\is_callable($className)) {
             $provider = \call_user_func_array($className, $args);
